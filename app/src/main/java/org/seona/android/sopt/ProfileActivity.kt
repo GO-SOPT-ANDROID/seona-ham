@@ -1,12 +1,8 @@
 package org.seona.android.sopt
 
-import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.activity.result.ActivityResultLauncher
-import org.seona.android.sopt.databinding.ActivityLoginBinding
+import androidx.appcompat.app.AppCompatActivity
 import org.seona.android.sopt.databinding.ActivityProfileBinding
-import org.seona.android.sopt.databinding.ActivitySignUpBinding
 
 class ProfileActivity : AppCompatActivity() {
     private lateinit var binding: ActivityProfileBinding
@@ -18,11 +14,7 @@ class ProfileActivity : AppCompatActivity() {
         val name = intent.getStringExtra("name") ?: ""
         val mbti = intent.getStringExtra("mbti") ?: ""
 
-        binding.tvProfileName.text="이름 : ${name}"
-        binding.tvProfileMbti.text="mbti : ${mbti}"
+        binding.tvProfileName.text = "이름 : ${name}"
+        binding.tvProfileMbti.text = "mbti : ${mbti}"
     }
 }
-
-
-
-
