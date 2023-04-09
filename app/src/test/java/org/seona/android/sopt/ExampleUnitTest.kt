@@ -1,4 +1,4 @@
-package org.android.go.sopt
+package org.seona.android.sopt
 
 import org.junit.Test
 
