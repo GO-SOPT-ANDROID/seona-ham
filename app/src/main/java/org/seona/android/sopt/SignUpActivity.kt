@@ -20,14 +20,14 @@ class SignUpActivity : AppCompatActivity() {
         }
 
         binding.buttonSignup.setOnClickListener {
-            if (binding.etSingupId.text.length < 6 || binding.etSingupId.text.length > 10) {
+            if (binding.etSingupId.text.length !in 6..10) {
                 Snackbar.make(
                     binding.root,
                     "ID는 6글자 ~ 10글자 이내로 입력해주세요.",
                     Snackbar.LENGTH_SHORT
                 ).show()
                 return@setOnClickListener
-            } else if (binding.etSignupPw.text.length < 8 || binding.etSignupPw.text.length > 12) {
+            } else if (binding.etSignupPw.text.length !in 8..12) {
                 Snackbar.make(
                     binding.root,
                     "PW는 8글자 ~ 12글자 이내로 입력해주세요.",
@@ -51,15 +51,12 @@ class SignUpActivity : AppCompatActivity() {
             }
 
             val loginIntent = Intent(this@SignUpActivity, LoginActivity::class.java)
-            loginIntent.putExtra("id",binding.etSingupId.text.toString())
-            loginIntent.putExtra("pw",binding.etSignupPw.text.toString())
-            loginIntent.putExtra("name",binding.etSignupName.text.toString())
-            loginIntent.putExtra("mbti",binding.etSignupMbti.text.toString())
+            loginIntent.putExtra("id", binding.etSingupId.text.toString())
+            loginIntent.putExtra("pw", binding.etSignupPw.text.toString())
+            loginIntent.putExtra("name", binding.etSignupName.text.toString())
+            loginIntent.putExtra("mbti", binding.etSignupMbti.text.toString())
             setResult(RESULT_OK, loginIntent)
             finish()
-
-//            startActivity(goToLoginActivity)
-
         }
     }
 }
