@@ -3,7 +3,6 @@ package org.seona.android.sopt
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -20,23 +19,27 @@ class LoginActivity : AppCompatActivity() {
     var name = ""
     var mbti = ""
 
+    fun signUpSuccess(intent: Intent?) {
+        Snackbar.make(
+            binding.root,
+            "회원가입이 완료되었습니다.",
+            Snackbar.LENGTH_SHORT
+        ).show()
+
+        id = intent?.getStringExtra("id") ?: ""
+        pw = intent?.getStringExtra("pw") ?: ""
+        name = intent?.getStringExtra("name") ?: ""
+        mbti = intent?.getStringExtra("mbti") ?: ""
+    }
+
+    // TODO: 함수 분리 필요
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityLoginBinding.inflate(layoutInflater)
         resultLauncher =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-                if(result.resultCode == Activity.RESULT_OK) {
-
-                    Snackbar.make(
-                        binding.root,
-                        "회원가입이 완료되었습니다.",
-                        Snackbar.LENGTH_SHORT
-                    ).show()
-
-                    id = result.data?.getStringExtra("id") ?: ""
-                    pw = result.data?.getStringExtra("pw") ?: ""
-                    name = result.data?.getStringExtra("name") ?: ""
-                    mbti = result.data?.getStringExtra("mbti") ?: ""
+                if (result.resultCode == Activity.RESULT_OK) {
+                    signUpSuccess(result.data)
                 }
             }
         setContentView(binding.root)
@@ -60,8 +63,8 @@ class LoginActivity : AppCompatActivity() {
                     ).show()
 
                     val profileIntent = Intent(this@LoginActivity, ProfileActivity::class.java)
-                    profileIntent.putExtra("name",name)
-                    profileIntent.putExtra("mbti",mbti)
+                    profileIntent.putExtra("name", name)
+                    profileIntent.putExtra("mbti", mbti)
                     startActivity(profileIntent)
 
                 } else {
