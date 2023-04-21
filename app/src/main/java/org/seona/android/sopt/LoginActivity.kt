@@ -32,7 +32,6 @@ class LoginActivity : AppCompatActivity() {
         mbti = intent?.getStringExtra("mbti") ?: ""
     }
 
-    // TODO: 함수 분리 필요
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityLoginBinding.inflate(layoutInflater)
@@ -66,7 +65,6 @@ class LoginActivity : AppCompatActivity() {
                     profileIntent.putExtra("name", name)
                     profileIntent.putExtra("mbti", mbti)
                     startActivity(profileIntent)
-
                 } else {
                     Snackbar.make(
                         binding.root,
