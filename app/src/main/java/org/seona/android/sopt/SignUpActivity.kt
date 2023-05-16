@@ -23,61 +23,6 @@ class SignUpActivity : AppCompatActivity() { //하위 액티비티
 
     private val userService = ServicePool.userSoptService
 
-    private fun makeSnackBarMessage(message: String) {
-        Snackbar.make(
-            binding.root,
-            message,
-            Snackbar.LENGTH_SHORT
-        ).show()
-    }
-
-    private fun completeSignUp() {
-        userService.signup(
-            with(binding) {
-                RequestSignupDto(
-                    etSingupId.text.toString(),
-                    etSignupPw.text.toString(),
-                    etSignupName.text.toString(),
-                    etSignupMbti.text.toString(),
-                )
-            }
-        ).enqueue(object : retrofit2.Callback<ResponseSignupDto> {
-            override fun onResponse(
-                call: Call<ResponseSignupDto>,
-                response: Response<ResponseSignupDto>
-            ) {
-                if (response.isSuccessful) {
-                    val loginIntent = Intent(
-                        this@SignUpActivity,
-                        LoginActivity::class.java
-                    ) //intent activity 통신 원활하게 할 수 있게 도와주는 친구
-
-                    setResult(RESULT_OK, loginIntent)
-
-                    if (!isFinishing) finish()
-
-                } else {
-                    response.body()?.message?.let {
-                        makeSnackBarMessage(it)
-                    } ?: "서버 통신 실패(40x)"
-                }
-            }
-
-            override fun onFailure(call: Call<ResponseSignupDto>, t: Throwable) {
-                t.message?.let {
-                    makeSnackBarMessage(it)
-                } ?: "서버통신 실패(응답값 x)"
-            }
-        })
-    }
-
-    private fun buttonValidationCheck() {
-        binding.buttonSignup.isEnabled = idValidationCheck
-                && pwValidationCheck
-                && nameValidationCheck
-                && mbtiValidationCheck
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) { //화면 가로모드 세로모드 전환 떄 oncreate 함수를 다시 호출하는데 이 때 데이터 유지하기 위함?
         super.onCreate(savedInstanceState)
         binding = ActivitySignUpBinding.inflate(layoutInflater) //xml에 표기된 레이아웃들을 메모리에 객체화시키는 행동이다.
@@ -140,6 +85,61 @@ class SignUpActivity : AppCompatActivity() { //하위 액티비티
         binding.buttonSignup.setOnClickListener {
             completeSignUp()
         }
+    }
+
+    private fun makeSnackBarMessage(message: String) {
+        Snackbar.make(
+            binding.root,
+            message,
+            Snackbar.LENGTH_SHORT
+        ).show()
+    }
+
+    private fun completeSignUp() {
+        userService.signup(
+            with(binding) {
+                RequestSignupDto(
+                    etSingupId.text.toString(),
+                    etSignupPw.text.toString(),
+                    etSignupName.text.toString(),
+                    etSignupMbti.text.toString(),
+                )
+            }
+        ).enqueue(object : retrofit2.Callback<ResponseSignupDto> {
+            override fun onResponse(
+                call: Call<ResponseSignupDto>,
+                response: Response<ResponseSignupDto>
+            ) {
+                if (response.isSuccessful) {
+                    val loginIntent = Intent(
+                        this@SignUpActivity,
+                        LoginActivity::class.java
+                    ) //intent activity 통신 원활하게 할 수 있게 도와주는 친구
+
+                    setResult(RESULT_OK, loginIntent)
+
+                    if (!isFinishing) finish()
+
+                } else {
+                    response.body()?.message?.let {
+                        makeSnackBarMessage(it)
+                    } ?: "서버 통신 실패(40x)"
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseSignupDto>, t: Throwable) {
+                t.message?.let {
+                    makeSnackBarMessage(it)
+                } ?: "서버통신 실패(응답값 x)"
+            }
+        })
+    }
+
+    private fun buttonValidationCheck() {
+        binding.buttonSignup.isEnabled = idValidationCheck
+                && pwValidationCheck
+                && nameValidationCheck
+                && mbtiValidationCheck
     }
 }
 

@@ -3,6 +3,7 @@ package org.seona.android.sopt
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.os.Message
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -19,10 +20,26 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding
     private lateinit var resultLauncher: ActivityResultLauncher<Intent>
     private val userService = ServicePool.userSoptService
-    fun signUpSuccess() {
+
+    private fun signUpSuccess() {
         Snackbar.make(
             binding.root,
             "회원가입이 완료되었습니다.",
+            Snackbar.LENGTH_SHORT
+        ).show()
+    }
+
+    private fun signInSuccess(name : String, mbti : String) {
+        val profileIntent = Intent(this@LoginActivity, ProfileActivity::class.java)
+        profileIntent.putExtra("name", name)
+        profileIntent.putExtra("mbti", mbti)
+        startActivity(profileIntent)
+    }
+
+    private fun signInFailed(message: String) {
+        Snackbar.make(
+            binding.root,
+            message,
             Snackbar.LENGTH_SHORT
         ).show()
     }
@@ -55,16 +72,9 @@ class LoginActivity : AppCompatActivity() {
                     response: Response<ResponseSigninDto>
                 ) {
                     if (response.isSuccessful) {
-                        val profileIntent = Intent(this@LoginActivity, ProfileActivity::class.java)
-                        profileIntent.putExtra("name", response.body()?.data?.name ?: "")
-                        profileIntent.putExtra("mbti", response.body()?.data?.mbti ?: "")
-                        startActivity(profileIntent)
+                        signInSuccess(response.body()?.data?.name ?: "", response.body()?.data?.mbti ?: "")
                     } else {
-                        Snackbar.make(
-                            binding.root,
-                            response.body()?.message?:"알 수 없는 이유로 로그인에 실패하였습니다.",
-                            Snackbar.LENGTH_SHORT
-                        ).show()
+                        signInFailed(response.body()?.message?:"알 수 없는 이유로 로그인에 실패하였습니다.")
                     }
                 }
 

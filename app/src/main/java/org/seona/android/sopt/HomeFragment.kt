@@ -1,13 +1,6 @@
 package org.seona.android.sopt
 
-import android.content.Intent
-import android.graphics.BitmapFactory
-import android.graphics.ImageDecoder
-import android.net.Uri
-import android.os.Build
 import android.os.Bundle
-import android.provider.MediaStore
-import android.provider.MediaStore.Audio.Media
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,13 +8,11 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.Snackbar
 import org.seona.android.sopt.adapter.UserAdapter.UserAdapter
 import org.seona.android.sopt.data.Response.ResponseGetUserDto
-import org.seona.android.sopt.data.Response.ResponseSigninDto
 import org.seona.android.sopt.data.ServicePool
 import org.seona.android.sopt.data.User
 import org.seona.android.sopt.databinding.FragmentHomeBinding
 import retrofit2.Call
 import retrofit2.Response
-import java.net.URL
 
 class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
@@ -32,7 +23,7 @@ class HomeFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -40,8 +31,6 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val userAdapter = UserAdapter(requireContext())
-//        val titleAdapter = TitleAdapter(requireContext())
-//        val concatAdapter = ConcatAdapter(titleAdapter, userAdapter)
         binding.rvUser.adapter = userAdapter
 
         userService.getUsers(1).enqueue(object : retrofit2.Callback<ResponseGetUserDto> {
@@ -53,7 +42,7 @@ class HomeFragment : Fragment() {
                     userAdapter.setUserList(response.body()?.data?.map {
                         return@map User(
                             it.avatar,
-                            "${it.first_name} ${it.last_name}",
+                            "${it.firstName} ${it.lastName}",
                             it.email
                         )
                     } ?: emptyList())
@@ -77,6 +66,7 @@ class HomeFragment : Fragment() {
     }
 
     override fun onDestroyView() {
+        _binding = null
         super.onDestroyView()
     }
 
