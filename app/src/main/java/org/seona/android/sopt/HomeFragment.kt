@@ -1,77 +1,32 @@
 package org.seona.android.sopt
 
+import android.content.Intent
+import android.graphics.BitmapFactory
+import android.graphics.ImageDecoder
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.provider.MediaStore
+import android.provider.MediaStore.Audio.Media
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.ConcatAdapter
-import org.seona.android.sopt.adapter.MenuAdapter
-import org.seona.android.sopt.adapter.TitleAdapter
-import org.seona.android.sopt.data.Menu
+import com.google.android.material.snackbar.Snackbar
+import org.seona.android.sopt.adapter.UserAdapter.UserAdapter
+import org.seona.android.sopt.data.Response.ResponseGetUserDto
+import org.seona.android.sopt.data.Response.ResponseSigninDto
+import org.seona.android.sopt.data.ServicePool
+import org.seona.android.sopt.data.User
 import org.seona.android.sopt.databinding.FragmentHomeBinding
+import retrofit2.Call
+import retrofit2.Response
+import java.net.URL
 
 class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = requireNotNull(_binding)
-
-    private val mockMenuList = listOf<Menu>(
-        Menu(
-            image = R.drawable.odung,
-            menuName = "아메리카노",
-            menuPrice = 2500,
-        ),
-        Menu(
-            image = R.drawable.odung2,
-            menuName = "에스프레소",
-            menuPrice = 2000,
-        ),
-        Menu(
-            image = R.drawable.odung3,
-            menuName = "카페라떼",
-            menuPrice = 3500,
-        ),
-        Menu(
-            image = R.drawable.odung4,
-            menuName = "돌체라떼",
-            menuPrice = 3500,
-        ),
-        Menu(
-            image = R.drawable.odung5,
-            menuName = "녹차라떼",
-            menuPrice = 4500,
-        ),
-        Menu(
-            image = R.drawable.odung6,
-            menuName = "초코라떼",
-            menuPrice = 4500,
-        ),
-        Menu(
-            image = R.drawable.odung7,
-            menuName = "자몽에이드",
-            menuPrice = 6000,
-        ),
-        Menu(
-            image = R.drawable.odung8,
-            menuName = "레몬에이드",
-            menuPrice = 6000,
-        ),
-        Menu(
-            image = R.drawable.odung9,
-            menuName = "녹차프라페",
-            menuPrice = 6000,
-        ),
-        Menu(
-            image = R.drawable.odung10,
-            menuName = "딸기프라페",
-            menuPrice = 6000,
-        ),
-        Menu(
-            image = R.drawable.odung11,
-            menuName = "초코프라페",
-            menuPrice = 6000,
-        ),
-    )
+    private val userService = ServicePool.userReqresService
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -84,14 +39,41 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val menuAdapter = MenuAdapter(requireContext())
-        val titleAdapter = TitleAdapter(requireContext())
-        val concatAdapter = ConcatAdapter(titleAdapter, menuAdapter)
-        binding.rvMenu.adapter = concatAdapter
+        val userAdapter = UserAdapter(requireContext())
+//        val titleAdapter = TitleAdapter(requireContext())
+//        val concatAdapter = ConcatAdapter(titleAdapter, userAdapter)
+        binding.rvUser.adapter = userAdapter
 
-        menuAdapter.setMenuList(mockMenuList)
-        titleAdapter.setTitle("5doong cafe")
-        concatAdapter.notifyDataSetChanged()
+        userService.getUsers(1).enqueue(object : retrofit2.Callback<ResponseGetUserDto> {
+            override fun onResponse(
+                call: Call<ResponseGetUserDto>,
+                response: Response<ResponseGetUserDto>
+            ) {
+                if (response.isSuccessful) {
+                    userAdapter.setUserList(response.body()?.data?.map {
+                        return@map User(
+                            it.avatar,
+                            "${it.first_name} ${it.last_name}",
+                            it.email
+                        )
+                    } ?: emptyList())
+                } else {
+                    Snackbar.make(
+                        binding.root,
+                        "유저 조회에 실패하였습니다.",
+                        Snackbar.LENGTH_SHORT
+                    ).show()
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseGetUserDto>, t: Throwable) {
+                Snackbar.make(
+                    binding.root,
+                    t.message ?: "유저 조회에 실패하였습니다.(-1)",
+                    Snackbar.LENGTH_SHORT
+                ).show()
+            }
+        })
     }
 
     override fun onDestroyView() {

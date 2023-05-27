@@ -12,5 +12,4 @@ class MenuViewHolder(
             binding.tvMenuName.text = data.menuName
             binding.tvMenuPrice.text = data.menuPrice.toString()
         }
-
-}
+    }
